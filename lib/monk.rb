@@ -7,6 +7,8 @@ require "fileutils"
 class Monk < Thor
   include Thor::Actions
   
+  class_options[:skip].aliases.delete "-s"
+  
   class << self    
     private
     
