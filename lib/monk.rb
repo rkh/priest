@@ -29,8 +29,9 @@ class Monk < Thor
   method_option :skeleton, :type => :string, :aliases => "-s"     
   def init(target = ".")
     say_status :fetching, skeleton.url
-    say_status :error, clone_error(target) unless skeleton.create(target)
-    say_status :initialized, target      
+    skeleton.create(target) ?
+      say_status(:error, clone_error(target)) : 
+      say_status(:initialized, target)
   end
   
   desc "show NAME", "Display the repository address for NAME"
