@@ -82,7 +82,7 @@ class Monk < Thor
    def rm(name)
      skel = monk_config.delete(name)
      write_monk_config_file
-     system "rm -R #{skel.mirror_path}" if self.mirror_path?
+     system "rm -R #{skel.mirror_path}" if skel.mirror_path?
      say_status :deleted, name
    end
 
