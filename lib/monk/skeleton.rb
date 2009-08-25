@@ -17,10 +17,29 @@ class Monk < Thor
       self.options = HashWithIndifferentAccess.new opts
       options[:url] ||= url
       raise ArgumentError, "no url given" unless options.url?
+      options[:mirror_path] ||= File.join(Monk.monk_mirrors, Time.now.to_i) if mirror
     end
     
-    def create(directory)
-      if Dir["#{target}/*"].empty?
+    def update_mirror
+      if mirror?       
+        if File.exist? mirror_path
+          system "cd #{mirror_path} && git pull origin -q 2>/dev/null"
+        else
+          system <<-EOS
+            mkdir -p #{Monk.monk_mirrors}
+            git clone -q #{url} #{mirror_path}
+          EOS
+        end
+      end
+    end
+    
+    def system(cmd)
+      super
+    end
+    
+    def create(directory) 
+      update_mirror
+      if Dir["#{directory}/*"].empty?
         self.target = directory
         return false unless system clone_command
         clean_up unless keep_remote?
@@ -36,14 +55,18 @@ class Monk < Thor
       advanced_clone? ? advanced_clone_command : fast_clone_command
     end
     
+    def mirror_url
+      mirror? ? @mirror_url : url
+    end
+    
     def fast_clone_command
-      "git clone -q --depth 1 #{url} #{target}" 
+      "git clone -q --depth 1 #{mirror_url} #{target}" 
     end
     
     def advanced_clone_command
       <<-EOS
         mkdir -p #{target} && cd target &&
-        git init -q && git remote add -t #{branch} -f #{remote_name} #{url} &&
+        git init -q && git remote add -t #{branch} -f #{remote_name} #{mirror_url} &&
         git checkout -t #{remote}/#{branch}
       EOS
     end
