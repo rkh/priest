@@ -58,7 +58,7 @@ class TestMonk < Test::Unit::TestCase
         FileUtils.rm_rf("monk-test")
         FileUtils.mkdir("monk-test")
 
-        monk("add foobar git://github.com/monkrb/skeleton.git")
+        create_template "foobar"
 
         Dir.chdir("monk-test") do
           out, err = monk("init -s foobar")
@@ -71,7 +71,7 @@ class TestMonk < Test::Unit::TestCase
   context "monk show NAME" do
     should "display the repository for NAME" do
       out, err = monk("show default")
-      assert out["git://github.com/monkrb/skeleton.git"]
+      assert out[template_path "default"]
     end
 
     should "display nothing if NAME is not set" do
@@ -84,7 +84,7 @@ class TestMonk < Test::Unit::TestCase
     should "display the configured repositories" do
       out, err = monk("list")
       assert out["default"]
-      assert out["git://github.com/monkrb/skeleton.git"]
+      assert out[template_path "default"]
     end
   end
 
@@ -98,28 +98,28 @@ class TestMonk < Test::Unit::TestCase
     end
 
     should "allow to fetch from the added repository when using the skeleton parameter" do
-      monk("add glue git://github.com/monkrb/glue.git")
+      path = create_template "foo"
 
-      Dir.chdir(root("test", "tmp")) do
-        FileUtils.rm_rf("monk-test")
-        FileUtils.mkdir("monk-test")
+      Dir.chdir(tmp_path) do
+        rm_rf("monk-test")
+        mkdir("monk-test")
 
-        out, err = monk("init monk-test --skeleton glue")
+        out, err = monk("init monk-test --skeleton foo")
         assert_match /initialized/, out
-        assert_match /glue.git/, out
+        assert_match /#{path}/, out
       end
     end
 
     should "allow to fetch from the added repository when using the s parameter" do
-      monk("add glue git://github.com/monkrb/glue.git")
+      path = create_template "foo"
 
-      Dir.chdir(root("test", "tmp")) do
-        FileUtils.rm_rf("monk-test")
-        FileUtils.mkdir("monk-test")
+      Dir.chdir(tmp_path) do
+        rm_rf("monk-test")
+        mkdir("monk-test")
 
-        out, err = monk("init monk-test -s glue")
+        out, err = monk("init monk-test -s foo")
         assert_match /initialized/, out
-        assert_match /glue.git/, out
+        assert_match /#{path}/, out
       end
     end
   end
