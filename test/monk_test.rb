@@ -22,6 +22,7 @@ class TestMonk < Test::Unit::TestCase
 
         out, err = monk("init monk-test")
         assert_match /initialized.* monk-test/, out
+        assert is_template?("monk-test", "default")
       end
     end
   end
@@ -49,6 +50,7 @@ class TestMonk < Test::Unit::TestCase
         Dir.chdir("monk-test") do
           out, err = monk("init")
           assert_match /initialized/, out
+          assert is_template?(".", "default") 
         end
       end
     end
@@ -63,6 +65,7 @@ class TestMonk < Test::Unit::TestCase
         Dir.chdir("monk-test") do
           out, err = monk("init -s foobar")
           assert_match /initialized/, out
+          assert is_template?(".", "foobar") 
         end
       end
     end
@@ -107,6 +110,7 @@ class TestMonk < Test::Unit::TestCase
         out, err = monk("init monk-test --skeleton foo")
         assert_match /initialized/, out
         assert_match /#{path}/, out
+        assert is_template?("monk-test", "foo") 
       end
     end
 
@@ -120,6 +124,7 @@ class TestMonk < Test::Unit::TestCase
         out, err = monk("init monk-test -s foo")
         assert_match /initialized/, out
         assert_match /#{path}/, out
+        assert is_template?("monk-test", "foo") 
       end
     end
   end

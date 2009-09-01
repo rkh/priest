@@ -51,6 +51,11 @@ class Test::Unit::TestCase
   def in_template(name, &block)
     chdir(create_template(name), &block)
   end
+  
+  def is_template?(path, name)
+    file = File.join path, "name"
+    File.exist?(file) && File.read(file) == name
+  end
 
   def monk(args = nil)
     sh("env MONK_HOME=#{File.join(ROOT, "test", "tmp")} ruby -rubygems #{root "bin/monk"} #{args}")
