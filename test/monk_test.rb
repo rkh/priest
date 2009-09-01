@@ -4,11 +4,11 @@ class TestMonk < Test::Unit::TestCase
   context "monk init NAME" do
     should "fail if the target working directory is not empty" do
       chdir tmp_path do
-        FileUtils.rm_rf("monk-test")
-        FileUtils.mkdir("monk-test")
+        rm_rf("monk-test")
+        mkdir("monk-test")
 
-        Dir.chdir("monk-test") do
-          FileUtils.touch("foobar")
+        chdir("monk-test") do
+          touch("foobar")
         end
 
         out, err = monk("init monk-test")
@@ -18,7 +18,7 @@ class TestMonk < Test::Unit::TestCase
 
     should "create a skeleton app in the target directory" do
       chdir tmp_path do
-        FileUtils.rm_rf("monk-test")
+        rm_rf("monk-test")
 
         out, err = monk("init monk-test")
         assert_match /initialized.* monk-test/, out
@@ -30,12 +30,12 @@ class TestMonk < Test::Unit::TestCase
   context "monk init" do
     should "fail if the current working directory is not empty" do
       chdir tmp_path do
-        FileUtils.rm_rf("monk-test")
-        FileUtils.mkdir("monk-test")
+        rm_rf("monk-test")
+        mkdir("monk-test")
 
 
-        Dir.chdir("monk-test") do
-          FileUtils.touch("foobar")
+        chdir("monk-test") do
+          touch("foobar")
           out, err = monk("init")
           assert_match /error/, out
         end
@@ -44,10 +44,10 @@ class TestMonk < Test::Unit::TestCase
 
     should "create a skeleton app in the working directory" do
       chdir tmp_path do
-        FileUtils.rm_rf("monk-test")
-        FileUtils.mkdir("monk-test")
+        rm_rf("monk-test")
+        mkdir("monk-test")
 
-        Dir.chdir("monk-test") do
+        chdir("monk-test") do
           out, err = monk("init")
           assert_match /initialized/, out
           assert is_template?(".", "default") 
@@ -57,12 +57,12 @@ class TestMonk < Test::Unit::TestCase
 
     should "use an alternative skeleton if the option is provided" do
       chdir tmp_path do
-        FileUtils.rm_rf("monk-test")
-        FileUtils.mkdir("monk-test")
+        rm_rf("monk-test")
+        mkdir("monk-test")
 
         create_template "foobar"
 
-        Dir.chdir("monk-test") do
+        chdir("monk-test") do
           out, err = monk("init -s foobar")
           assert_match /initialized/, out
           assert is_template?(".", "foobar") 
@@ -103,7 +103,7 @@ class TestMonk < Test::Unit::TestCase
     should "allow to fetch from the added repository when using the skeleton parameter" do
       path = create_template "foo"
 
-      Dir.chdir(tmp_path) do
+      chdir(tmp_path) do
         rm_rf("monk-test")
         mkdir("monk-test")
 
@@ -117,7 +117,7 @@ class TestMonk < Test::Unit::TestCase
     should "allow to fetch from the added repository when using the s parameter" do
       path = create_template "foo"
 
-      Dir.chdir(tmp_path) do
+      chdir(tmp_path) do
         rm_rf("monk-test")
         mkdir("monk-test")
 
