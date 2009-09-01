@@ -6,6 +6,6 @@ task :default => :test
 
 namespace :test do
   task :integration do
-    system "cd test && mkdir -p tmp && ruby integration_test.rb"
+    system "cd test && ruby integration_test.rb"
   end
 end
