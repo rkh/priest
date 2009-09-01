@@ -3,7 +3,7 @@ require File.join(File.dirname(__FILE__), "test_helper")
 class TestMonk < Test::Unit::TestCase
   context "monk init NAME" do
     should "fail if the target working directory is not empty" do
-      Dir.chdir(root("test", "tmp")) do
+      chdir tmp_path do
         FileUtils.rm_rf("monk-test")
         FileUtils.mkdir("monk-test")
 
@@ -17,7 +17,7 @@ class TestMonk < Test::Unit::TestCase
     end
 
     should "create a skeleton app in the target directory" do
-      Dir.chdir(root("test", "tmp")) do
+      chdir tmp_path do
         FileUtils.rm_rf("monk-test")
 
         out, err = monk("init monk-test")
@@ -29,7 +29,7 @@ class TestMonk < Test::Unit::TestCase
 
   context "monk init" do
     should "fail if the current working directory is not empty" do
-      Dir.chdir(root("test", "tmp")) do
+      chdir tmp_path do
         FileUtils.rm_rf("monk-test")
         FileUtils.mkdir("monk-test")
 
@@ -43,7 +43,7 @@ class TestMonk < Test::Unit::TestCase
     end
 
     should "create a skeleton app in the working directory" do
-      Dir.chdir(root("test", "tmp")) do
+      chdir tmp_path do
         FileUtils.rm_rf("monk-test")
         FileUtils.mkdir("monk-test")
 
@@ -56,7 +56,7 @@ class TestMonk < Test::Unit::TestCase
     end
 
     should "use an alternative skeleton if the option is provided" do
-      Dir.chdir(root("test", "tmp")) do
+      chdir tmp_path do
         FileUtils.rm_rf("monk-test")
         FileUtils.mkdir("monk-test")
 
