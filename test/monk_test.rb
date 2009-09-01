@@ -25,6 +25,27 @@ class TestMonk < Test::Unit::TestCase
         assert is_template?("monk-test", "default")
       end
     end
+    
+    should "not remove .git if keep_remote option is passed" do
+      chdir tmp_path do
+        rm_rf("monk-test")
+
+        out, err = monk("init monk-test --keep_remote")
+        assert_match /initialized.* monk-test/, out
+        assert File.exist?(tmp_path("monk-test", ".git"))
+      end
+    end
+
+    should "not remove .git if k option is passed" do
+      chdir tmp_path do
+        rm_rf("monk-test")
+
+        out, err = monk("init monk-test -k")
+        assert_match /initialized.* monk-test/, out
+        assert File.exist?(tmp_path("monk-test", ".git"))
+      end
+    end
+    
   end
 
   context "monk init" do
@@ -69,6 +90,33 @@ class TestMonk < Test::Unit::TestCase
         end
       end
     end
+    
+    should "not remove .git if keep_remote option is passed" do
+      chdir tmp_path do
+        rm_rf("monk-test")
+        mkdir("monk-test")
+        
+        chdir("monk-test") do
+          out, err = monk("init --keep_remote")
+          assert_match /initialized/, out
+          assert File.exist?(".git")
+        end
+      end
+    end
+      
+    should "not remove .git if k option is passed" do
+      chdir tmp_path do
+        rm_rf("monk-test")
+        mkdir("monk-test")
+
+        chdir("monk-test") do
+          out, err = monk("init -k")
+          assert_match /initialized/, out
+          assert File.exist?(".git")
+        end
+      end
+    end
+    
   end
 
   context "monk show NAME" do
@@ -111,6 +159,26 @@ class TestMonk < Test::Unit::TestCase
         assert_match /initialized/, out
         assert_match /#{path}/, out
         assert is_template?("monk-test", "foo") 
+      end
+    end
+    
+    should "allow to set keep_remote for a skeleton" do 
+      chdir tmp_path do
+        create_template "foo", "--keep_remote"
+        rm_rf("monk-test")
+        monk "init monk-test --skeleton foo"
+        assert is_template?("monk-test", "foo")
+        assert File.exist?(tmp_path("monk-test", ".git"))
+      end
+    end
+    
+    should "allow to set keep_remote for a skeleton" do 
+      chdir tmp_path do
+        create_template "foo", "-k"
+        rm_rf("monk-test")
+        monk "init monk-test --skeleton foo"
+        assert is_template?("monk-test", "foo")
+        assert File.exist?(tmp_path("monk-test", ".git"))
       end
     end
 
