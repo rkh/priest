@@ -26,11 +26,11 @@ class TestMonk < Test::Unit::TestCase
       end
     end
     
-    should "not remove .git if keep_remote option is passed" do
+    should "not remove .git if keep-remote option is passed" do
       chdir tmp_path do
         rm_rf("monk-test")
 
-        out, err = monk("init monk-test --keep_remote")
+        out, err = monk("init monk-test --keep-remote")
         assert_match /initialized.* monk-test/, out
         assert File.exist?(tmp_path("monk-test", ".git"))
       end
@@ -91,13 +91,13 @@ class TestMonk < Test::Unit::TestCase
       end
     end
     
-    should "not remove .git if keep_remote option is passed" do
+    should "not remove .git if keep-remote option is passed" do
       chdir tmp_path do
         rm_rf("monk-test")
         mkdir("monk-test")
         
         chdir("monk-test") do
-          out, err = monk("init --keep_remote")
+          out, err = monk("init --keep-remote")
           assert_match /initialized/, out
           assert File.exist?(".git")
         end
@@ -162,9 +162,9 @@ class TestMonk < Test::Unit::TestCase
       end
     end
     
-    should "allow to set keep_remote for a skeleton" do 
+    should "allow to set keep-remote for a skeleton" do 
       chdir tmp_path do
-        create_template "foo", "--keep_remote"
+        create_template "foo", "--keep-remote"
         rm_rf("monk-test")
         monk "init monk-test --skeleton foo"
         assert is_template?("monk-test", "foo")
@@ -172,7 +172,7 @@ class TestMonk < Test::Unit::TestCase
       end
     end
     
-    should "allow to set keep_remote for a skeleton" do 
+    should "allow to set keep-remote for a skeleton" do 
       chdir tmp_path do
         create_template "foo", "-k"
         rm_rf("monk-test")
@@ -205,4 +205,16 @@ class TestMonk < Test::Unit::TestCase
       assert out["repository not found"]
     end
   end
+  
+  context "monk copy FROM TO" do
+    should "copy a template" do 
+      chdir tmp_path do
+        rm_rf "monk-test"
+        monk "copy default foo"
+        monk "init monk-test -s foo"
+        assert is_template?("monk-test", "default")
+      end
+    end
+  end
+  
 end
