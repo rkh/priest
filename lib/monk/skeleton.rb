@@ -65,9 +65,9 @@ class Monk < Thor
     
     def advanced_clone_command
       <<-EOS
-        mkdir -p #{target} && cd target &&
+        mkdir -p #{target} && cd #{target} &&
         git init -q && git remote add -t #{branch} -f #{remote_name} #{mirror_url} &&
-        git checkout -t #{remote}/#{branch}
+        git checkout -t #{remote_name}/#{branch}
       EOS
     end
     
@@ -90,7 +90,8 @@ class Monk < Thor
     end 
     
     def method_missing(name, *args, &block)
-      return options[name] || DEFAULTS[name] if Monk.git_options.include? name.to_s
+      name = name.to_s
+      return options[name] || DEFAULTS[name] if Monk.git_options.include? name
       result = options.send(name, *args, &block)
       if result.equal? options then self
       elsif result.is_a? Hash then Skeleton.new result
