@@ -69,7 +69,7 @@ class Monk < Thor
    def change(name)
      if monk_config.include? name
        monk_config[name].merge! git_options
-       path = monk_config[to].delete "mirror_path"
+       path = monk_config[name].delete "mirror_path"
        system "rm -R #{path}" if path
        write_monk_config_file
        say_status :modified, name
@@ -128,7 +128,7 @@ private
   
   def git_options
     self.class.git_options.inject({}) do |opts, key|
-       opts.merge key => options[key] if options.include? key
+       opts.merge! key => options[key] if options.include? key
        opts
     end
   end
@@ -147,8 +147,8 @@ private
   end
 
   def write_monk_config_file
-    remove_file monk_config_file
-    create_file monk_config_file do
+    remove_file monk_config_file, :verbose => false
+    create_file(monk_config_file, nil, :verbose => false) do
       config = @monk_config || { "default" => Skeleton.new("git://github.com/monkrb/skeleton.git") }
       config.to_yaml
     end
