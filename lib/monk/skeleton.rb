@@ -68,9 +68,9 @@ class Monk < Thor
     
     def advanced_clone_command
       <<-EOS
-        mkdir -p #{target} && cd #{target} &&
+        (mkdir -p #{target} && cd #{target} &&
         git init -q && git remote add -t #{branch} -f #{remote_name} #{mirror_url} &&
-        git checkout -t #{remote_name}/#{branch} -q
+        git checkout -t #{remote_name}/#{branch} -q) >/dev/null 2>&1
       EOS
     end
     
