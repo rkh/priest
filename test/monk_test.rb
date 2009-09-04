@@ -56,6 +56,15 @@ class TestMonk < Test::Unit::TestCase
       end
     end
     
+    should "name remote after remote-name parameter" do
+      chdir tmp_path do
+        rm_rf "monk-test"
+        out, err = monk("init monk-test --keep-remote --remote-name foo")
+        assert_match /initialized.* monk-test/, out
+        chdir("monk-test") { assert %x[git remote show]["foo"] }
+      end
+    end
+    
   end
 
   context "monk init" do
@@ -140,6 +149,18 @@ class TestMonk < Test::Unit::TestCase
       end
     end
     
+    should "name remote after remote-name parameter" do
+      chdir tmp_path do
+        rm_rf "monk-test"
+        mkdir "monk-test"
+        chdir "monk-test" do
+          out, err = monk("init --keep-remote --remote-name foo")
+          assert_match /initialized/, out
+          assert %x[git remote show]["foo"]
+        end
+      end
+    end
+    
   end
 
   context "monk show NAME" do
@@ -182,26 +203,6 @@ class TestMonk < Test::Unit::TestCase
         assert_match /initialized/, out
         assert_match /#{path}/, out
         assert is_template?("monk-test", "foo") 
-      end
-    end
-    
-    should "allow to set keep-remote for a skeleton" do 
-      chdir tmp_path do
-        create_template "foo", "--keep-remote"
-        rm_rf("monk-test")
-        monk "init monk-test --skeleton foo"
-        assert is_template?("monk-test", "foo")
-        assert File.exist?(tmp_path("monk-test", ".git"))
-      end
-    end
-    
-    should "allow to set keep-remote for a skeleton" do 
-      chdir tmp_path do
-        create_template "foo", "-k"
-        rm_rf("monk-test")
-        monk "init monk-test --skeleton foo"
-        assert is_template?("monk-test", "foo")
-        assert File.exist?(tmp_path("monk-test", ".git"))
       end
     end
 
@@ -258,6 +259,16 @@ class TestMonk < Test::Unit::TestCase
           assert_match /initialized/, out
           assert File.exist?(".git")
         end
+      end
+    end
+    
+    should "name remote after remote-name parameter" do
+      chdir tmp_path do
+        rm_rf "monk-test"
+        create_template "foo", "--keep-remote --remote-name foo"
+        out, err = monk("init monk-test --skeleton foo")
+        assert_match /initialized.* monk-test/, out
+        chdir("monk-test") { assert %x[git remote show]["foo"] }
       end
     end
     
