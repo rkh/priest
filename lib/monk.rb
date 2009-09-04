@@ -61,6 +61,7 @@ class Monk < Thor
   def add(name, repository_url)
     monk_config[name] = Skeleton.new(repository_url)
     monk_config[name].merge! git_options
+    monk_config[name].update_mirror
     write_monk_config_file
     say_status :added, name
   end
@@ -69,8 +70,10 @@ class Monk < Thor
    def change(name)
      if monk_config.include? name
        monk_config[name].merge! git_options
-       path = monk_config[name].delete "mirror_path"
-       system "rm -R #{path}" if path
+       if options.include? "mirror" and not options.mirror?
+         path = monk_config[name].delete "mirror_path"
+        system "rm -R #{path}" if path
+       end
        write_monk_config_file
        say_status :modified, name
      else
