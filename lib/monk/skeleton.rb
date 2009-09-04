@@ -21,15 +21,14 @@ class Monk < Thor
     end
     
     def update_mirror
-      if mirror?       
-        if File.exist? mirror_path
-          system "cd #{mirror_path} && git pull origin -q 2>/dev/null"
-        else
-          system <<-EOS
-            mkdir -p #{Monk.monk_mirrors}
-            git clone -q #{url} #{mirror_path}
-          EOS
-        end
+      return unless mirror?       
+      if File.exist? mirror_path
+        system "cd #{mirror_path} && git pull origin -q 2>/dev/null"
+      else
+        system <<-EOS
+          mkdir -p #{Monk.monk_mirrors}
+          git clone -q #{url} #{mirror_path}
+        EOS
       end
     end
     
