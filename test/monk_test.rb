@@ -283,4 +283,15 @@ class TestMonk < Test::Unit::TestCase
     end
   end
   
+  context "monk change NAME" do
+    should "remove the named repository from the configuration" do
+      monk("add foobar git://github.com/monkrb/foo.git --keep-remote")
+      out, err = monk("show foobar")
+      assert out["keep_remote: true"]
+      monk("change foobar --no-keep-remote")
+      out, err = monk("show foobar")
+      assert out["keep_remote: false"]
+    end
+  end
+  
 end
