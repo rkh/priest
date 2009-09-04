@@ -35,6 +35,16 @@ class TestMonk < Test::Unit::TestCase
         assert File.exist?(tmp_path("monk-test", ".git"))
       end
     end
+    
+    should "remove .git if no-keep-remote option is passed" do
+      chdir tmp_path do
+        rm_rf("monk-test")
+
+        out, err = monk("init monk-test --no-keep-remote")
+        assert_match /initialized.* monk-test/, out
+        assert !File.exist?(tmp_path("monk-test", ".git"))
+      end
+    end
 
     should "not remove .git if k option is passed" do
       chdir tmp_path do
@@ -100,6 +110,19 @@ class TestMonk < Test::Unit::TestCase
           out, err = monk("init --keep-remote")
           assert_match /initialized/, out
           assert File.exist?(".git")
+        end
+      end
+    end
+    
+    should "remove .git if no-keep-remote option is passed" do
+      chdir tmp_path do
+        rm_rf("monk-test")
+        mkdir("monk-test")
+        
+        chdir("monk-test") do
+          out, err = monk("init --no-keep-remote")
+          assert_match /initialized/, out
+          assert !File.exist?(".git")
         end
       end
     end
