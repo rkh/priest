@@ -218,6 +218,49 @@ class TestMonk < Test::Unit::TestCase
         assert is_template?("monk-test", "foo") 
       end
     end
+    
+    should "not remove .git if keep-remote option is passed" do
+      chdir tmp_path do
+        rm_rf("monk-test")
+        mkdir("monk-test")        
+        create_template "foo", "--keep-remote"
+        
+        chdir("monk-test") do
+          out, err = monk("init --skeleton foo")
+          assert_match /initialized/, out
+          assert File.exist?(".git")
+        end
+      end
+    end
+    
+    should "remove .git if no-keep-remote option is passed" do
+      chdir tmp_path do
+        rm_rf("monk-test")
+        mkdir("monk-test")        
+        create_template "foo", "--no-keep-remote"
+        
+        chdir("monk-test") do
+          out, err = monk("init --skeleton foo")
+          assert_match /initialized/, out
+          assert !File.exist?(".git")
+        end
+      end
+    end
+      
+    should "not remove .git if k option is passed" do
+      chdir tmp_path do
+        rm_rf("monk-test")
+        mkdir("monk-test")        
+        create_template "foo", "-k"
+        
+        chdir("monk-test") do
+          out, err = monk("init --skeleton foo")
+          assert_match /initialized/, out
+          assert File.exist?(".git")
+        end
+      end
+    end
+    
   end
 
   context "monk rm NAME" do
