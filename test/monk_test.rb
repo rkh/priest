@@ -74,6 +74,16 @@ class TestMonk < Test::Unit::TestCase
         assert is_template?("monk-test", "foo")
       end
     end
+
+    should "be able to pull from skeletons with parameter m if original is not available" do
+      chdir tmp_path do
+        rm_rf "monk-test"
+        rm_rf create_template("foo", "-m")
+        out, err = monk("init monk-test --skeleton foo")
+        assert_match /initialized.* monk-test/, out
+        assert is_template?("monk-test", "foo")
+      end
+    end
     
   end
 
