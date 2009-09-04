@@ -72,7 +72,7 @@ class Monk < Thor
     end
     
     def clean_up
-      Dir.chdir(target) { system "rm -Rf #{target}" }
+      Dir.chdir(target) { system "rm -Rf .git" }
     end
     
     def config
