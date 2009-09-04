@@ -66,7 +66,7 @@ class Monk < Thor
       <<-EOS
         mkdir -p #{target} && cd #{target} &&
         git init -q && git remote add -t #{branch} -f #{remote_name} #{mirror_url} &&
-        git checkout -t #{remote_name}/#{branch}
+        git checkout -t #{remote_name}/#{branch} -q
       EOS
     end
     
