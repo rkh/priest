@@ -17,7 +17,7 @@ class Monk < Thor
       self.options = HashWithIndifferentAccess.new opts
       options[:url] ||= url
       raise ArgumentError, "no url given" unless options.url?
-      options[:mirror_path] ||= File.join(Monk.monk_mirrors, Time.now.to_i) if mirror
+      options[:mirror_path] ||= File.join(Monk.monk_mirrors, Time.now.to_i.to_s) if mirror
     end
     
     def update_mirror
@@ -83,9 +83,17 @@ class Monk < Thor
     end
     
     def description
-      options.map do |key, value|
-        "#{key}: #{value}"
-      end.join ", "
+      parameters = options.map do |key, value|
+        case key
+        when "url", "mirror_path" then nil
+        when "mirror", "keep_remote"
+          "#{"no-" unless value}#{key.gsub("_", "-")}"
+        else
+          "#{key}: #{value.inspect}"
+        end
+      end.compact.join ", "
+      parameters = "(#{parameters})" unless parameters.empty?
+      "#{url} #{parameters}"
     end 
     
     def method_missing(name, *args, &block)
