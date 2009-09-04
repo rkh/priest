@@ -65,6 +65,16 @@ class TestMonk < Test::Unit::TestCase
       end
     end
     
+    should "be able to pull from skeletons with parameter mirror if original is not available" do
+      chdir tmp_path do
+        rm_rf "monk-test"
+        rm_rf create_template("foo", "--mirror")
+        out, err = monk("init monk-test --skeleton foo")
+        assert_match /initialized.* monk-test/, out
+        assert is_template?("monk-test", "foo")
+      end
+    end
+    
   end
 
   context "monk init" do

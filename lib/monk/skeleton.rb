@@ -9,26 +9,23 @@ class Monk < Thor
     
     DEFAULTS = { "remote_name" => "skeleton", "branch" => "master" }
     
-    def initialize(url = nil, opts = {})
-      
-      if url.respond_to? :merge
-        opts.merge! url
-        url = nil
-      end
-      
+    def initialize(url = nil, opts = {})     
+      opts, url = opts.merge(url), nil if url.respond_to? :merge    
       self.options = HashWithIndifferentAccess.new opts
       options[:url] ||= url
-      raise ArgumentError, "no url given" unless options.url?
-      
-      if mirror?
+      raise ArgumentError, "no url given" unless options.url?      
+    end
+    
+    def mirror_path
+      return unless mirror?
+      options[:mirror_path] ||= begin        
         require 'digest/md5'
-        options[:mirror_path] ||= File.join(Monk.monk_mirrors, Digest::MD5.hexdigest(options[:url]))
+        File.join(Monk.monk_mirrors, Digest::MD5.hexdigest(options[:url]))
       end
-      
     end
     
     def update_mirror
-      return unless mirror?       
+      return unless mirror?      
       if File.exist? mirror_path
         system "cd #{mirror_path} && git pull origin -q >/dev/null"
       else
