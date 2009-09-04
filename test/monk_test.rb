@@ -85,6 +85,16 @@ class TestMonk < Test::Unit::TestCase
       end
     end
     
+    should "be able to pull from a url instead of a known skeleton" do
+      chdir tmp_path do
+        rm_rf "monk-test"
+        path = create_template("foo")
+        out, err = monk("init monk-test --skeleton #{path}")
+        assert_match /initialized.* monk-test/, out
+        assert is_template?("monk-test", "foo")
+      end
+    end
+    
   end
 
   context "monk init" do
@@ -177,6 +187,19 @@ class TestMonk < Test::Unit::TestCase
           out, err = monk("init --keep-remote --remote-name foo")
           assert_match /initialized/, out
           assert %x[git remote show]["foo"]
+        end
+      end
+    end    
+    
+    should "be able to pull from a url instead of a known skeleton" do
+      chdir tmp_path do
+        rm_rf "monk-test"
+        mkdir "monk-test"
+        path = create_template("foo")
+        chdir "monk-test" do
+          out, err = monk("init --skeleton #{path}")
+          assert_match /initialized/, out
+          assert is_template?(".", "foo")
         end
       end
     end
