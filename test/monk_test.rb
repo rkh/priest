@@ -95,6 +95,36 @@ class TestMonk < Test::Unit::TestCase
       end
     end
     
+    should "respect the branch parameter" do
+      chdir tmp_path do
+        in_template "foobar" do
+          system "git checkout -b foo 1>/dev/null 2>&1 || git checkout foo -q"
+          File.open("only_in_branch", "w").close
+          system "(git add only_in_branch && git commit -a -m 'added') 1>/dev/null 2>&1"
+        end 
+        rm_rf "monk-test"
+        out, err = monk("init monk-test --skeleton foobar --branch foo")
+        assert_match /initialized.* monk-test/, out
+        assert is_template?("monk-test", "foobar")
+        assert File.exist?(File.join("monk-test", "only_in_branch"))
+      end
+    end
+    
+    should "respect the b parameter" do
+      chdir tmp_path do
+        in_template "foobar" do
+          system "git checkout -b foo 1>/dev/null 2>&1 || git checkout foo -q"
+          File.open("only_in_branch", "w").close
+          system "(git add only_in_branch && git commit -a -m 'added') 1>/dev/null 2>&1"
+        end 
+        rm_rf "monk-test"
+        out, err = monk("init monk-test --skeleton foobar -b foo")
+        assert_match /initialized.* monk-test/, out
+        assert is_template?("monk-test", "foobar")
+        assert File.exist?(File.join("monk-test", "only_in_branch"))
+      end
+    end
+    
   end
 
   context "monk init" do
