@@ -1,50 +1,46 @@
 require 'thor/core_ext/hash_with_indifferent_access'
+require 'fileutils'
 require 'monk'
 
 class Monk < Thor
   class Skeleton
     
-    include Thor::CoreExt    
+    include Thor::CoreExt
+    include FileUtils
     attr_accessor :options, :target
     
     DEFAULTS = { "remote_name" => "skeleton", "branch" => "master" }
     
     def initialize(url = nil, opts = {})     
-      opts, url = opts.merge(url), nil if url.respond_to? :merge    
+      opts, url = opts.merge(url), nil if url.respond_to? :merge
       self.options = HashWithIndifferentAccess.new opts
       options[:url] ||= url
-      raise ArgumentError, "no url given" unless options.url?      
+      raise ArgumentError, "no url given" unless options.url?
     end
     
     def mirror_path
       return unless mirror?
-      options[:mirror_path] ||= begin        
+      options[:mirror_path] ||= begin
         require 'digest/md5'
         File.join(Monk.monk_mirrors, Digest::MD5.hexdigest(options[:url]))
       end
     end
     
     def update_mirror
-      return unless mirror?      
+      return unless mirror?
       if File.exist? mirror_path
-        system "cd #{mirror_path} && git pull origin -q >/dev/null"
+        chdir(mirror_path) { system "git pull origin -q >/dev/null 2>&1"}
       else
-        system <<-EOS
-          mkdir -p #{Monk.monk_mirrors}
-          git clone -q #{url} #{mirror_path}
-        EOS
+        mkdir_p Monk.monk_mirrors
+        system "git clone -q #{url} #{mirror_path}"
       end
     end
     
-    def system(cmd)
-      super
-    end
-    
-    def create(directory) 
+    def create(directory)
       update_mirror
       if Dir["#{directory}/*"].empty?
         self.target = directory
-        return false unless system clone_command
+        return false unless clone_command
         clean_up unless keep_remote?
         true
       end
@@ -55,23 +51,24 @@ class Monk < Thor
     end
     
     def clone_command
-      advanced_clone? ? advanced_clone_command : fast_clone_command
+      advanced_clone? ? advanced_clone : fast_clone
     end
     
     def mirror_url
       mirror? ? mirror_path : url
     end
     
-    def fast_clone_command
-      "git clone -q --depth 1 #{mirror_url} #{target}" 
+    def fast_clone
+      system "git clone -q --depth 1 #{mirror_url} #{target}"
     end
     
-    def advanced_clone_command
-      <<-EOS
-        (mkdir -p #{target} && cd #{target} &&
-        git init -q && git remote add -t #{branch} -f #{remote_name} #{mirror_url} &&
-        git checkout -t #{remote_name}/#{branch} -q) >/dev/null 2>&1
-      EOS
+    def advanced_clone
+      mkdir_p target
+      Dir.chdir target do
+        system "(git init -q &&
+                 git remote add -t #{branch} -f #{remote_name} #{mirror_url} &&
+                 git checkout -t #{remote_name}/#{branch} -q) >/dev/null 2>&1"
+      end
     end
     
     def clean_up
