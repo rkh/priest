@@ -10,7 +10,7 @@ require "monk/skeleton"
 class Monk < Thor
   include Thor::Actions
   
-  class_options[:skip].aliases.delete "-s"
+  class_options[:skip].aliases.delete "-s" if class_options.include? :skip
   
   def self.git_option(name, options = {})
     class_option name, options.merge(:group => :git)
