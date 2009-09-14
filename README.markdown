@@ -1,5 +1,5 @@
-Monk
-====
+Priest
+======
 
 The glue framework for web development.
 
