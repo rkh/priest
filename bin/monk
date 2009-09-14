@@ -1,6 +1,7 @@
 #! /usr/bin/env ruby -rubygems
 
-require File.join(File.dirname(__FILE__), "..", "lib", "monk")
+$LOAD_PATH.unshift File.expand_path(File.join(File.dirname(__FILE__), "..", "lib"))
+require "monk"
 
 # A way to extend Monk is to write tasks in a Thorfile in the project's root directory.
 # Monk loads the Thorfile if there is one, and all the tasks that are declared in the
