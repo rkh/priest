@@ -3,12 +3,10 @@
 $LOAD_PATH.unshift File.expand_path(File.join(File.dirname(__FILE__), "..", "lib"))
 require "monk"
 
-# A way to extend Monk is to write tasks in a Thorfile in the project's root directory.
-# Monk loads the Thorfile if there is one, and all the tasks that are declared in the
+# A way to extend Monk is to write tasks in a Monkfile in the project's root directory.
+# Monk loads the Monkfile if there is one, and all the tasks that are declared in the
 # class Monk become available.
-if File.exists?("Thorfile")
-  load("Thorfile")
-end
+Dir.glob("{Thor,Monk}file") { |f| load f }
 
 # Start the monk tasks.
 Monk.start
