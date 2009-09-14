@@ -18,13 +18,17 @@ own versions of the skeleton app and your own list of dependencies. You
 can add many different templates (different git repositories) and Monk
 will help you manage them all.
 
+Priest is an extended monk commandline tool with functionallity not being
+accepted into mainline monk. It is however compatible with mainline glue
+and skeletons.
+
 Usage
 -----
 
 Install the monk gem and create your project:
 
-    $ sudo gem install monk
-    $ monk init myapp
+    $ sudo gem install rkh-priest
+    $ priest init myapp
     $ cd myapp
     $ rake
 
@@ -41,7 +45,7 @@ you have, and run the `dep` command line tool to verify it.
 Installation
 ------------
 
-    $ sudo gem install monk
+    $ sudo gem install rkh-monk
 
 License
 -------
